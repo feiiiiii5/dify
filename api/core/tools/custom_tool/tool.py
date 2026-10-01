@@ -356,6 +356,15 @@ class ApiTool(Tool):
                 elif property["type"] == "string":
                     return str(value)
                 elif property["type"] == "boolean":
+                    if isinstance(value, bool):
+                        return value
+                    # Mirror _convert_body_property_any_of: the strings "false"
+                    # and "0" are falsy, while bool("false") is True.
+                    normalized = str(value).strip().lower()
+                    if normalized in {"true", "1"}:
+                        return True
+                    if normalized in {"false", "0"}:
+                        return False
                     return bool(value)
                 elif property["type"] == "null":
                     if value is None:
